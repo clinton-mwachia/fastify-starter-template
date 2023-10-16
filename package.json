@@ -1,0 +1,29 @@
+{
+  "name": "fastify-starter-template",
+  "version": "1.0.0",
+  "description": "FASTIFY START TEMPLATE FOR YOUR API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "FASTIFY",
+    "API",
+    "BACKEND"
+  ],
+  "author": "clinton moshe mwachia",
+  "license": "MIT License",
+  "dependencies": {
+    "@fastify/cors": "^8.4.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.24.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.6.2",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "pino-pretty": "^10.2.3"
+  }
+}
