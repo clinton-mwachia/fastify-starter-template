@@ -3,6 +3,7 @@
  */
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
 async function UserRoutes(fastify) {
@@ -95,6 +96,36 @@ async function UserRoutes(fastify) {
     }
   });
   /** end update user by id */
+
+  /** start user login */
+  fastify.post("/user/login", async (request, reply) => {
+    try {
+      const user = await User.findOne({ username: request.body.username });
+      const secret = process.env.SECRET;
+
+      if (!user) {
+        return reply.status(404).send({ message: "user not found" });
+      } else {
+        if (user && bcrypt.compareSync(request.body.password, user.password)) {
+          const token = jwt.sign({ userid: user.id }, secret, {
+            expiresIn: "1h",
+          });
+          return reply.send({
+            token: token,
+            userId: user._id,
+            message: "Login successful",
+          });
+        } else {
+          return reply
+            .status(400)
+            .send({ message: "password/username is incorrect" });
+        }
+      }
+    } catch (error) {
+      return reply.status(500).send({ message: error });
+    }
+  });
+  /** end user login */
 }
 
 module.exports = UserRoutes;
