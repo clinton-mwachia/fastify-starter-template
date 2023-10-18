@@ -19,6 +19,17 @@ async function UserRoutes(fastify) {
     }
   });
   /** start register users */
+
+  /** start get all users */
+  fastify.get("/users", async (request, reply) => {
+    try {
+      const users = await User.find().sort({ createdAt: -1 });
+      reply.send(users);
+    } catch (error) {
+      reply.status(500).send({ message: "Error getting users", error });
+    }
+  });
+  /** end get all users */
 }
 
 module.exports = UserRoutes;
