@@ -52,6 +52,9 @@ async function UserRoutes(fastify) {
 
   /** start delete a user by id */
   fastify.delete("/user/:id", async (request, reply) => {
+    if (!mongoose.isObjectIdOrHexString(request.params.id)) {
+      reply.status(400).send({ message: "invalid user id" });
+    }
     try {
       const userDel = await User.findByIdAndDelete(request.params.id);
       if (!userDel) {
@@ -66,6 +69,32 @@ async function UserRoutes(fastify) {
     }
   });
   /** end delete a user by id */
+
+  /** start update user by id */
+  fastify.put("/user/:id", async (request, reply) => {
+    if (!mongoose.isObjectIdOrHexString(request.params.id)) {
+      reply.status(400).send({ message: "invalid user id" });
+    }
+    try {
+      const user = await User.findByIdAndUpdate(
+        request.params.id,
+        request.body,
+        {
+          new: true,
+        }
+      );
+      if (!user) {
+        reply.send({ message: "User not found!" });
+      } else {
+        reply.send({ message: "User updated!!!" });
+      }
+    } catch (err) {
+      reply
+        .status(500)
+        .send({ message: `Error updating user ${request.params.id}`, err });
+    }
+  });
+  /** end update user by id */
 }
 
 module.exports = UserRoutes;
