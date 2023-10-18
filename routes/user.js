@@ -126,6 +126,43 @@ async function UserRoutes(fastify) {
     }
   });
   /** end user login */
+
+  /** start change password */
+  fastify.put("/user/changepwd/:id", async (request, reply) => {
+    if (!mongoose.isObjectIdOrHexString(request.params.id)) {
+      reply.status(400).send({ message: "invalid user id" });
+    }
+    try {
+      const userFind = await User.findById(request.params.id);
+
+      if (!userFind) {
+        reply.status(404).send({ message: "User not found" });
+      }
+      if (bcrypt.compareSync(request.body.oldPassword, userFind.password)) {
+        const user = await User.findByIdAndUpdate(
+          request.params.id,
+          { password: bcrypt.hashSync(request.body.password, 10) },
+          {
+            new: true,
+          }
+        );
+        if (!user) {
+          return reply
+            .status(400)
+            .send({ message: "password cannot be updated" });
+        } else {
+          return reply
+            .status(200)
+            .send({ success: true, message: "Password changed" });
+        }
+      } else {
+        return reply.status(500).send({ message: "wrong old password" });
+      }
+    } catch (error) {
+      return reply.status(400).send({ message: error.message });
+    }
+  });
+  /** end change password */
 }
 
 module.exports = UserRoutes;
