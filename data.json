@@ -1,0 +1,21 @@
+{
+  "users": [
+    {
+      "username": "clintonMoshe",
+      "role": "superadmin",
+      "phone": "+25478945672",
+      "password": "clintonMoshe1234"
+    },
+    {
+      "username": "andrewPeters",
+      "role": "admin",
+      "phone": "+25472945672",
+      "password": "andrewPeters1234"
+    },
+    {
+      "username": "shirleyDoc23",
+      "phone": "+23412945672",
+      "password": "shirleyDoc231234"
+    }
+  ]
+}
