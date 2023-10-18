@@ -3,6 +3,7 @@
  */
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 
 async function UserRoutes(fastify) {
   /** start register users */
@@ -30,6 +31,24 @@ async function UserRoutes(fastify) {
     }
   });
   /** end get all users */
+
+  /** start get user by id */
+  fastify.get("/user/:id", async (request, reply) => {
+    if (!mongoose.isObjectIdOrHexString(request.params.id)) {
+      reply.status(400).send({ message: "invalid user id" });
+    }
+    try {
+      const user = await User.findById(request.params.id);
+      if (!user) {
+        reply.status(404).send({ message: "User not found" });
+      } else {
+        reply.send(user);
+      }
+    } catch (error) {
+      reply.status(500).send({ message: "Error getting user by ID", error });
+    }
+  });
+  /** end get user by userid */
 }
 
 module.exports = UserRoutes;
