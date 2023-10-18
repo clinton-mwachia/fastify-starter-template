@@ -49,6 +49,23 @@ async function UserRoutes(fastify) {
     }
   });
   /** end get user by userid */
+
+  /** start delete a user by id */
+  fastify.delete("/user/:id", async (request, reply) => {
+    try {
+      const userDel = await User.findByIdAndDelete(request.params.id);
+      if (!userDel) {
+        reply.send({ message: "User already deleted" });
+      } else {
+        reply.send({ message: "User deleted" });
+      }
+    } catch (err) {
+      reply
+        .status(500)
+        .send({ message: `Error deleting user ${request.params.id}`, err });
+    }
+  });
+  /** end delete a user by id */
 }
 
 module.exports = UserRoutes;
