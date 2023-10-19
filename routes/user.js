@@ -163,6 +163,32 @@ async function UserRoutes(fastify) {
     }
   });
   /** end change password */
+
+  /** start reset password */
+  fastify.put("/user/:id/pwd-reset", async (request, reply) => {
+    if (!mongoose.isObjectIdOrHexString(request.params.id)) {
+      reply.status(400).send({ message: "invalid user id" });
+    }
+    try {
+      const user = await User.findByIdAndUpdate(
+        request.params.id,
+        { password: bcrypt.hashSync(request.body.password, 10) },
+        {
+          new: true,
+        }
+      );
+      if (!user) {
+        return reply.status(400).send({ message: "User not found" });
+      } else {
+        return reply
+          .status(200)
+          .send({ success: true, message: "Password Reset Successful" });
+      }
+    } catch (error) {
+      return reply.status(400).send({ message: error.message });
+    }
+  });
+  /** end reset password */
 }
 
 module.exports = UserRoutes;
