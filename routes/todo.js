@@ -2,6 +2,7 @@
  *
  */
 const Todo = require("../models/todo");
+const mongoose = require("mongoose");
 const User = require("../models/user");
 
 async function TodoRoutes(fastify) {
@@ -36,6 +37,27 @@ async function TodoRoutes(fastify) {
     }
   });
   /** end get all todos */
+
+  /** start get todo by id */
+  fastify.get("/todo/:id", async (request, reply) => {
+    // validate todo id
+    if (!mongoose.isValidObjectId(request.params.id)) {
+      reply.status(400).send({ message: "Invalid todo id" });
+    }
+    try {
+      const todo = await Todo.findById(request.params.id)
+        .sort({ createdAt: -1 })
+        .populate({ path: "user", select: "username role phone" });
+      if (!todo) {
+        reply.status(404).send({ message: "todo not found" });
+      } else {
+        reply.send(todo);
+      }
+    } catch (error) {
+      reply.status(500).send({ message: "Error getting todo", error });
+    }
+  });
+  /** end get todo by id */
 }
 
 module.exports = TodoRoutes;
