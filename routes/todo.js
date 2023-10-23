@@ -141,10 +141,11 @@ async function TodoRoutes(fastify) {
   /** end count all todos */
 
   /** start count todos by priority */
+  // http://localhost:4050/todos/count/priority?priority=low
   fastify.get("/todos/count/priority", async (request, reply) => {
     try {
       const todocount = await Todo.find({
-        priority: request.query.role,
+        priority: request.query.priority,
       }).countDocuments();
       if (!todocount) {
         return reply.send({ TotalTodos: 0 });
@@ -156,6 +157,10 @@ async function TodoRoutes(fastify) {
     }
   });
   /** end count todos by priority*/
+
+  /** start aggregate todos */
+  // TODOD
+  /** end aggregate todos */
 }
 
 module.exports = TodoRoutes;
