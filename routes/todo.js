@@ -84,6 +84,23 @@ async function TodoRoutes(fastify) {
     }
   });
   /** end get todos by priority */
+
+  /** start delete a todo by id */
+  fastify.delete("/todo/:id", async (request, reply) => {
+    try {
+      const todoDel = await Todo.findByIdAndDelete(request.params.id);
+      if (!todoDel) {
+        reply.send({ message: "todo already deleted" });
+      } else {
+        reply.send({ message: "todo deleted" });
+      }
+    } catch (err) {
+      reply
+        .status(500)
+        .send({ message: `Error deleting todo ${request.params.id}`, err });
+    }
+  });
+  /** end delete a todo by id */
 }
 
 module.exports = TodoRoutes;
