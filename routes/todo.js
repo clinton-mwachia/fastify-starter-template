@@ -65,16 +65,25 @@ async function TodoRoutes(fastify) {
       const todos = await Todo.find({ user: request.query.user })
         .sort({ createdAt: -1 })
         .populate({ path: "user", select: "username role phone" });
-      if (!todos) {
-        reply.status(404).send({ message: "todos not found" });
-      } else {
-        reply.send(todos);
-      }
+      reply.send(todos);
     } catch (error) {
       reply.status(500).send({ message: "Error getting todos", error });
     }
   });
   /** end get todos by userid */
+
+  /** start get todos by priority */
+  fastify.get("/todos/priority", async (request, reply) => {
+    try {
+      const todos = await Todo.find({ priority: request.query.priority })
+        .sort({ createdAt: -1 })
+        .populate({ path: "user", select: "username role phone" });
+      reply.send(todos);
+    } catch (error) {
+      reply.status(500).send({ message: "Error getting todos", error });
+    }
+  });
+  /** end get todos by priority */
 }
 
 module.exports = TodoRoutes;
