@@ -17,5 +17,32 @@
       "phone": "+23412945672",
       "password": "shirleyDoc231234"
     }
+  ],
+  "todos": [
+    {
+      "user": "652fafe61ea032e39ca9957e",
+      "title": "UI/UX",
+      "priority": "urgent"
+    },
+    {
+      "user": "652fafe61ea032e39ca9957e",
+      "title": "API DESIGN",
+      "priority": "low"
+    },
+    {
+      "user": "652fafe61ea032e39ca9957e",
+      "title": "UI DESIGN",
+      "priority": "medium"
+    },
+    {
+      "user": "652fafda1ea032e39ca9957c",
+      "title": "Plan Lesson",
+      "priority": "urgent"
+    },
+    {
+      "user": "652fafda1ea032e39ca9957c",
+      "title": "Set Exam",
+      "priority": "medium"
+    }
   ]
 }
