@@ -8,6 +8,7 @@ const fastify = require("fastify")({
 });
 const mongoose = require("mongoose");
 const LoggerMiddleware = require("./helpers/logger");
+const authenticateMiddleware = require("./helpers/auth");
 require("dotenv").config();
 
 /** start import routes */
@@ -16,6 +17,7 @@ const TodoRoutes = require("./routes/todo");
 /** end import routes */
 
 /** start middlewares */
+fastify.addHook("preHandler", authenticateMiddleware);
 fastify.addHook("preHandler", LoggerMiddleware);
 /** end middlewares */
 
