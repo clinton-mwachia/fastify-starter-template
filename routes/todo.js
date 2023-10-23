@@ -16,7 +16,7 @@ async function TodoRoutes(fastify) {
         const todo = new Todo(request.body);
         await todo.save();
 
-        reply.send({ message: "User Account Created" });
+        reply.send({ message: "Todo Added!" });
       }
     } catch (err) {
       reply.status(500).send({ message: "Error inserting todo", err });
