@@ -101,6 +101,29 @@ async function TodoRoutes(fastify) {
     }
   });
   /** end delete a todo by id */
+
+  /** start update todo by id */
+  fastify.put("/todo/:id", async (request, reply) => {
+    try {
+      const todo = await Todo.findByIdAndUpdate(
+        request.params.id,
+        request.body,
+        {
+          new: true,
+        }
+      );
+      if (!todo) {
+        reply.send({ message: "todo not found!" });
+      } else {
+        reply.send({ message: "todo updated!!!" });
+      }
+    } catch (err) {
+      reply
+        .status(500)
+        .send({ message: `Error updating todo ${request.params.id}`, err });
+    }
+  });
+  /** end update todo by id */
 }
 
 module.exports = TodoRoutes;
