@@ -139,6 +139,23 @@ async function TodoRoutes(fastify) {
     }
   });
   /** end count all todos */
+
+  /** start count todos by priority */
+  fastify.get("/todos/count/priority", async (request, reply) => {
+    try {
+      const todocount = await Todo.find({
+        priority: request.query.role,
+      }).countDocuments();
+      if (!todocount) {
+        return reply.send({ TotalTodos: 0 });
+      } else {
+        return reply.send({ TotalTodos: todocount });
+      }
+    } catch (error) {
+      return reply.status(500).send({ message: error });
+    }
+  });
+  /** end count todos by priority*/
 }
 
 module.exports = TodoRoutes;
