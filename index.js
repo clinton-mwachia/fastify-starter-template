@@ -12,6 +12,7 @@ require("dotenv").config();
 
 /** start import routes */
 const UserRoutes = require("./routes/user");
+const TodoRoutes = require("./routes/todo");
 /** end import routes */
 
 /** start middlewares */
@@ -20,6 +21,7 @@ fastify.addHook("preHandler", LoggerMiddleware);
 
 /** start routes */
 fastify.register(UserRoutes);
+fastify.register(TodoRoutes);
 /** end routes */
 
 /** start constants */
