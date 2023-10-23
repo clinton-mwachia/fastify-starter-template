@@ -23,6 +23,19 @@ async function TodoRoutes(fastify) {
     }
   });
   /** end insert a single todo */
+
+  /** start get all todos */
+  fastify.get("/todos", async (request, reply) => {
+    try {
+      const todos = await Todo.find()
+        .sort({ createdAt: -1 })
+        .populate({ path: "user", select: "username role phone" });
+      reply.send(todos);
+    } catch (error) {
+      reply.status(500).send({ message: "Error getting todos", error });
+    }
+  });
+  /** end get all todos */
 }
 
 module.exports = TodoRoutes;
