@@ -31,3 +31,7 @@ Follow these steps to get the project up and running on your local machine.
 
 2. Install dependencies using `npm install`.
 3. Start the development server with `npm run dev`.
+
+## Benchmark
+
+`autocannon -c 100 -d 5 -p 10 http://127.0.0.1:4050/users`
