@@ -9,7 +9,12 @@ const fastify = require("fastify")({
 const mongoose = require("mongoose");
 const LoggerMiddleware = require("./helpers/logger");
 const authenticateMiddleware = require("./helpers/auth");
+const cluster = require("node:cluster");
+const { cpus } = require("node:os");
+const process = require("node:process");
 require("dotenv").config();
+
+const numCPUs = cpus().length;
 
 /** start import routes */
 const UserRoutes = require("./routes/user");
@@ -17,7 +22,7 @@ const TodoRoutes = require("./routes/todo");
 /** end import routes */
 
 /** start middlewares */
-fastify.addHook("preHandler", authenticateMiddleware);
+//fastify.addHook("preHandler", authenticateMiddleware);
 fastify.addHook("preHandler", LoggerMiddleware);
 /** end middlewares */
 
@@ -50,9 +55,28 @@ mongoose
 const start = async () => {
   try {
     fastify.listen({ port: PORT, host: "0.0.0.0" });
+    fastify.log.info("Server started");
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
   }
 };
-start();
+
+if (cluster.isPrimary) {
+  fastify.log.info(`Primary ${process.pid} is running`);
+
+  // Fork workers.
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on("exit", (worker, code, signal) => {
+    fastify.log.info(`worker ${worker.process.pid} died`);
+  });
+} else {
+  // Workers can share any TCP connection
+  // In this case it is an HTTP server
+  start();
+
+  fastify.log.info(`Worker ${process.pid} started`);
+}
