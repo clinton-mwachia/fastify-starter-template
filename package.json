@@ -12,7 +12,7 @@
     "API",
     "BACKEND"
   ],
-  "author": "clinton moshe mwachia",
+  "author": "https://github.com/clinton-mwachia",
   "license": "MIT License",
   "dependencies": {
     "@fastify/cors": "^8.4.0",
