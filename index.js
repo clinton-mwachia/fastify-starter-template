@@ -8,11 +8,9 @@ const fastify = require("fastify")({
 });
 const mongoose = require("mongoose");
 const LoggerMiddleware = require("./helpers/logger");
-const authenticateMiddleware = require("./helpers/auth");
+//const authenticateMiddleware = require("./helpers/auth");
 const cluster = require("node:cluster");
 const { cpus } = require("node:os");
-const process = require("node:process");
-require("dotenv").config();
 
 const numCPUs = cpus().length;
 
@@ -54,7 +52,7 @@ mongoose
  */
 const start = async () => {
   try {
-    fastify.listen({ port: PORT, host: "0.0.0.0" });
+    fastify.listen({ port: PORT, host: "127.0.0.1" });
     fastify.log.info("Server started");
   } catch (err) {
     fastify.log.error(err);
