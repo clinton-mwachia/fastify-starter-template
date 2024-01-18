@@ -4,25 +4,50 @@
 const Todo = require("../models/todo");
 const mongoose = require("mongoose");
 const User = require("../models/user");
+const multer = require("fastify-multer");
+const path = require("node:path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../uploads"));
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 async function TodoRoutes(fastify) {
+  fastify.register(upload.contentParser);
   /** start insert a single todo */
-  fastify.post("/todo/register", async (request, reply) => {
-    try {
-      const user = await User.findById(request.body.user);
+  fastify.post(
+    "/todo/register",
+    { preHandler: upload.array("files", 12) },
+    async (request, reply) => {
+      try {
+        const user = await User.findById(request.body.user);
 
-      if (!user) {
-        reply.status(404).send({ message: "User not found" });
-      } else {
-        const todo = new Todo(request.body);
-        await todo.save();
+        if (!user) {
+          reply.status(404).send({ message: "User not found" });
+        } else {
+          const imgUrls = [];
+          const imgs = request.files;
+          imgs &&
+            imgs.map((img) => {
+              imgUrls.push(img.path);
+            });
+          const todo = new Todo(request.body);
+          todo.files = imgUrls;
+          await todo.save();
 
-        reply.send({ message: "Todo Added!" });
+          reply.send({ message: "Todo Added!" });
+        }
+      } catch (err) {
+        reply.status(500).send({ message: "Error inserting todo", err });
       }
-    } catch (err) {
-      reply.status(500).send({ message: "Error inserting todo", err });
     }
-  });
+  );
   /** end insert a single todo */
 
   /** start get all todos */
