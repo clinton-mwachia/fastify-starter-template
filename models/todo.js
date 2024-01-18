@@ -15,6 +15,11 @@ const todoSchema = new mongoose.Schema(
       type: String,
       required: "title is required",
     },
+    files: [
+      {
+        type: String,
+      },
+    ],
     priority: {
       type: String,
       default: "low",
