@@ -16,8 +16,10 @@
   "license": "MIT License",
   "dependencies": {
     "@fastify/cors": "^8.4.0",
+    "@fastify/multipart": "^8.1.0",
     "bcrypt": "^5.1.1",
     "fastify": "^4.24.2",
+    "fastify-multer": "^2.0.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.2",
     "winston": "^3.11.0"

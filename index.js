@@ -8,6 +8,7 @@ const fastify = require("fastify")({
 });
 const mongoose = require("mongoose");
 const LoggerMiddleware = require("./helpers/logger");
+const fastifyMultipart = require("@fastify/multipart");
 //const authenticateMiddleware = require("./helpers/auth");
 const cluster = require("node:cluster");
 const { cpus } = require("node:os");
@@ -25,6 +26,9 @@ fastify.addHook("preHandler", LoggerMiddleware);
 /** end middlewares */
 
 /** start routes */
+fastify.register(fastifyMultipart, {
+  attachFieldsToBody: "keyValues",
+});
 fastify.register(UserRoutes);
 fastify.register(TodoRoutes);
 /** end routes */
