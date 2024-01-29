@@ -35,7 +35,7 @@ async function TodoRoutes(fastify) {
           const imgs = request.files;
           imgs &&
             imgs.map((img) => {
-              imgUrls.push(img.path);
+              imgUrls.push(img.originalname);
             });
           const todo = new Todo(request.body);
           todo.files = imgUrls;
