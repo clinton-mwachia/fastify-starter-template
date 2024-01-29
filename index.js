@@ -12,6 +12,7 @@ const fastifyMultipart = require("@fastify/multipart");
 //const authenticateMiddleware = require("./helpers/auth");
 const cluster = require("node:cluster");
 const { cpus } = require("node:os");
+const path = require("node:path");
 
 const numCPUs = cpus().length;
 
@@ -28,6 +29,10 @@ fastify.addHook("preHandler", LoggerMiddleware);
 /** start routes */
 fastify.register(fastifyMultipart, {
   attachFieldsToBody: "keyValues",
+});
+fastify.register(require("@fastify/static"), {
+  root: path.join(__dirname, "uploads"),
+  prefix: "/uploads/",
 });
 fastify.register(UserRoutes);
 fastify.register(TodoRoutes);
