@@ -31,11 +31,30 @@ async function TodoRoutes(fastify) {
         if (!user) {
           reply.status(404).send({ message: "User not found" });
         } else {
+          /*
+          THIS APPROACH WORKS WHEN UPLOADING FROM A FRONTEND (REACT)
+          let obj = {
+            user: request.body.user,
+            title: request.body.title,
+            priority: request.body.priority,
+          };
+          let imgUrls = [];
+          if (request.files) {
+            for (const file of request.files) {
+              const { originalname } = file;
+              imgUrls.push(originalname);
+            }
+          }
+
+          obj.files = imgUrls;
+
+           const todo = new Todo(obj);
+          */
           const imgUrls = [];
           const imgs = request.files;
           imgs &&
             imgs.map((img) => {
-              imgUrls.push(img.originalname);
+              imgUrls.push(img.name);
             });
           const todo = new Todo(request.body);
           todo.files = imgUrls;
