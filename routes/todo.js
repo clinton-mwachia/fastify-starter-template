@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const multer = require("fastify-multer");
 const path = require("node:path");
+const fs = require("node:fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -31,13 +32,6 @@ async function TodoRoutes(fastify) {
         if (!user) {
           reply.status(404).send({ message: "User not found" });
         } else {
-          /*
-          THIS APPROACH WORKS WHEN UPLOADING FROM A FRONTEND (REACT)
-          let obj = {
-            user: request.body.user,
-            title: request.body.title,
-            priority: request.body.priority,
-          };
           let imgUrls = [];
           if (request.files) {
             for (const file of request.files) {
@@ -46,16 +40,6 @@ async function TodoRoutes(fastify) {
             }
           }
 
-          obj.files = imgUrls;
-
-           const todo = new Todo(obj);
-          */
-          const imgUrls = [];
-          const imgs = request.files;
-          imgs &&
-            imgs.map((img) => {
-              imgUrls.push(img.name);
-            });
           const todo = new Todo(request.body);
           todo.files = imgUrls;
           await todo.save();
@@ -132,6 +116,26 @@ async function TodoRoutes(fastify) {
   /** start delete a todo by id */
   fastify.delete("/todo/:id", async (request, reply) => {
     try {
+      // Find todo by ID
+      const todo = await Todo.findById(request.params.id);
+
+      if (!todo) {
+        return reply.status(404).send({ message: "Todo not found" });
+      }
+
+      if (todo.files !== null) {
+        // Delete the associated files in the "uploads" folder
+        const filePathsToDelete = todo.files
+          .filter((filename) => filename !== null && filename !== undefined)
+          .map((filename) => path.join(__dirname, "../uploads", filename))
+          .filter((filePath) => fs.existsSync(filePath)); // skip files that do not exist
+
+        filePathsToDelete.forEach((filePath) => {
+          // Use fs.unlink to delete the file
+          fs.unlinkSync(filePath);
+        });
+      }
+
       const todoDel = await Todo.findByIdAndDelete(request.params.id);
       if (!todoDel) {
         reply.send({ message: "todo already deleted" });
