@@ -69,21 +69,4 @@ const start = async () => {
   }
 };
 
-if (cluster.isPrimary) {
-  fastify.log.info(`Primary ${process.pid} is running`);
-
-  // Fork workers.
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
-
-  cluster.on("exit", (worker, code, signal) => {
-    fastify.log.info(`worker ${worker.process.pid} died`);
-  });
-} else {
-  // Workers can share any TCP connection
-  // In this case it is an HTTP server
-  start();
-
-  fastify.log.info(`Worker ${process.pid} started`);
-}
+start();
