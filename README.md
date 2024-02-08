@@ -12,6 +12,7 @@
 - Shemas and Models.
 - Routes.
 - Authentication.
+- File Uploads
 - Easy integration and extensibility to fit your project requirements.
 
 ## 🛠️ Built with:
