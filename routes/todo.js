@@ -66,6 +66,33 @@ async function TodoRoutes(fastify) {
   });
   /** end get all todos */
 
+  /** start get todos with server side pagination */
+  fastify.get("/todos/pagination", async (request, reply) => {
+    const { page, limit } = request.query;
+    const pageNumber = parseInt(page) || 1;
+    const pageSize = parseInt(limit) || 10;
+    try {
+      const totalTodos = await Todo.countDocuments();
+      const totalPages = Math.ceil(totalTodos / pageSize);
+
+      const todos = await Todo.find()
+        .sort({ createdAt: -1 })
+        .skip((pageNumber - 1) * pageSize)
+        .limit(pageSize)
+        .populate({ path: "user", select: "username role phone" });
+
+      reply.send({
+        totalPages: totalPages,
+        data: todos,
+        hasMore: page < totalPages,
+      });
+    } catch (error) {
+      reply.status(500).send({ message: "Error getting todos", error });
+    }
+  });
+
+  /** end get todos with server side pagination */
+
   /** start get todo by id */
   fastify.get("/todo/:id", async (request, reply) => {
     // validate todo id
