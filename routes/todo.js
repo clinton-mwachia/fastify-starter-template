@@ -26,6 +26,11 @@ async function TodoRoutes(fastify) {
     "/todo/register",
     { preHandler: upload.array("files", 12) },
     async (request, reply) => {
+      const { user, title, due } = request.body;
+
+      if (!user || !title || !due) {
+        reply.send({ message: "The fields are required" });
+      }
       try {
         const user = await User.findById(request.body.user);
 
@@ -47,7 +52,9 @@ async function TodoRoutes(fastify) {
           reply.send({ message: "Todo Added!" });
         }
       } catch (err) {
-        reply.status(500).send({ message: "Error inserting todo", err });
+        reply
+          .status(500)
+          .send({ message: "Error inserting todo " + err.message });
       }
     }
   );
@@ -61,7 +68,9 @@ async function TodoRoutes(fastify) {
         .populate({ path: "user", select: "username role phone" });
       reply.send(todos);
     } catch (error) {
-      reply.status(500).send({ message: "Error getting todos", error });
+      reply
+        .status(500)
+        .send({ message: "Error getting todos " + error.message });
     }
   });
   /** end get all todos */
@@ -87,7 +96,9 @@ async function TodoRoutes(fastify) {
         hasMore: page < totalPages,
       });
     } catch (error) {
-      reply.status(500).send({ message: "Error getting todos", error });
+      reply
+        .status(500)
+        .send({ message: "Error getting todos " + error.message });
     }
   });
 
@@ -109,7 +120,9 @@ async function TodoRoutes(fastify) {
         reply.send(todo);
       }
     } catch (error) {
-      reply.status(500).send({ message: "Error getting todo", error });
+      reply
+        .status(500)
+        .send({ message: "Error getting todo " + error.message });
     }
   });
   /** end get todo by id */
@@ -122,7 +135,9 @@ async function TodoRoutes(fastify) {
         .populate({ path: "user", select: "username role phone" });
       reply.send(todos);
     } catch (error) {
-      reply.status(500).send({ message: "Error getting todos", error });
+      reply
+        .status(500)
+        .send({ message: "Error getting todos " + error.message });
     }
   });
   /** end get todos by userid */
@@ -135,7 +150,9 @@ async function TodoRoutes(fastify) {
         .populate({ path: "user", select: "username role phone" });
       reply.send(todos);
     } catch (error) {
-      reply.status(500).send({ message: "Error getting todos", error });
+      reply
+        .status(500)
+        .send({ message: "Error getting todos " + error.message });
     }
   });
   /** end get todos by priority */
@@ -172,7 +189,9 @@ async function TodoRoutes(fastify) {
     } catch (err) {
       reply
         .status(500)
-        .send({ message: `Error deleting todo ${request.params.id}`, err });
+        .send({
+          message: `Error deleting todo ${request.params.id} ` + err.message,
+        });
     }
   });
   /** end delete a todo by id */
@@ -195,7 +214,9 @@ async function TodoRoutes(fastify) {
     } catch (err) {
       reply
         .status(500)
-        .send({ message: `Error updating todo ${request.params.id}`, err });
+        .send({
+          message: `Error updating todo ${request.params.id} ` + err.message,
+        });
     }
   });
   /** end update todo by id */
@@ -210,7 +231,7 @@ async function TodoRoutes(fastify) {
         return reply.send({ TotalTodos: todocount });
       }
     } catch (error) {
-      return reply.status(500).send({ message: error });
+      return reply.status(500).send({ message: error.message });
     }
   });
   /** end count all todos */
@@ -228,7 +249,7 @@ async function TodoRoutes(fastify) {
         return reply.send({ TotalTodos: todocount });
       }
     } catch (error) {
-      return reply.status(500).send({ message: error });
+      return reply.status(500).send({ message: error.message });
     }
   });
   /** end count todos by priority*/

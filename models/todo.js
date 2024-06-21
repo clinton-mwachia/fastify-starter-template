@@ -28,7 +28,7 @@ const todoSchema = new mongoose.Schema(
     due: {
       type: String,
       default: new Date().toLocaleString(),
-      required: "sue date is required",
+      required: "due date is required",
     },
   },
   { timestamps: true }
