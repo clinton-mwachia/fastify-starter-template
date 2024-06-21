@@ -9,6 +9,11 @@ const mongoose = require("mongoose");
 async function UserRoutes(fastify) {
   /** start register users */
   fastify.post("/user/register", async (request, reply) => {
+    const { username, role, phone, password } = request.body;
+
+    if (!username || !role || !phone || !password) {
+      reply.send({ message: "The fields are required" });
+    }
     try {
       const user = new User(request.body);
       user.password = bcrypt.hashSync(request.body.password, 10);
@@ -17,7 +22,9 @@ async function UserRoutes(fastify) {
 
       reply.send({ message: "User Account Created!" });
     } catch (error) {
-      reply.status(500).send({ message: "Error creating user account", error });
+      reply
+        .status(500)
+        .send({ message: "Error creating user account " + error.message });
     }
   });
   /** start register users */
@@ -28,7 +35,9 @@ async function UserRoutes(fastify) {
       const users = await User.find().sort({ createdAt: -1 });
       reply.send(users);
     } catch (error) {
-      reply.status(500).send({ message: "Error getting users", error });
+      reply
+        .status(500)
+        .send({ message: "Error getting users " + error.message });
     }
   });
   /** end get all users */
@@ -46,7 +55,9 @@ async function UserRoutes(fastify) {
         reply.send(user);
       }
     } catch (error) {
-      reply.status(500).send({ message: "Error getting user by ID", error });
+      reply
+        .status(500)
+        .send({ message: "Error getting user by ID " + error.message });
     }
   });
   /** end get user by userid */
@@ -66,7 +77,9 @@ async function UserRoutes(fastify) {
     } catch (err) {
       reply
         .status(500)
-        .send({ message: `Error deleting user ${request.params.id}`, err });
+        .send({
+          message: `Error deleting user ${request.params.id} ` + err.message,
+        });
     }
   });
   /** end delete a user by id */
@@ -92,7 +105,9 @@ async function UserRoutes(fastify) {
     } catch (err) {
       reply
         .status(500)
-        .send({ message: `Error updating user ${request.params.id}`, err });
+        .send({
+          message: `Error updating user ${request.params.id} ` + err.message,
+        });
     }
   });
   /** end update user by id */
@@ -122,7 +137,7 @@ async function UserRoutes(fastify) {
         }
       }
     } catch (error) {
-      return reply.status(500).send({ message: error });
+      return reply.status(500).send({ message: error.message });
     }
   });
   /** end user login */
