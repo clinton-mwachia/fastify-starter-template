@@ -10,11 +10,7 @@ const mongoose = require("mongoose");
 const LoggerMiddleware = require("./helpers/logger");
 const fastifyMultipart = require("@fastify/multipart");
 //const authenticateMiddleware = require("./helpers/auth");
-const cluster = require("node:cluster");
-const { cpus } = require("node:os");
 const path = require("node:path");
-
-const numCPUs = cpus().length;
 
 /** start import routes */
 const UserRoutes = require("./routes/user");
