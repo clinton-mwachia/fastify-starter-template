@@ -30,6 +30,9 @@ fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "uploads"),
   prefix: "/uploads/",
 });
+fastify.register(require("@fastify/cors"), {
+  origin: "*",
+});
 fastify.register(UserRoutes);
 fastify.register(TodoRoutes);
 /** end routes */
