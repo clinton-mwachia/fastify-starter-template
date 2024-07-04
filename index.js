@@ -56,6 +56,11 @@ mongoose
   .catch((err) => fastify.log.error(err.message));
 
 /**
+ * Export Fastify instance for testing
+ */
+module.exports = fastify;
+
+/**
  * Run the server!
  */
 const start = async () => {
