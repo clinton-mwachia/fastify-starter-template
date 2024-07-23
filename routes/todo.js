@@ -28,7 +28,7 @@ async function TodoRoutes(fastify) {
     async (request, reply) => {
       const { user, title, due } = request.body;
 
-      if (!user || !title || !due) {
+      if (!user || !title) {
         reply.send({ message: "The fields are required" });
       }
       try {
@@ -187,11 +187,9 @@ async function TodoRoutes(fastify) {
         reply.send({ message: "todo deleted" });
       }
     } catch (err) {
-      reply
-        .status(500)
-        .send({
-          message: `Error deleting todo ${request.params.id} ` + err.message,
-        });
+      reply.status(500).send({
+        message: `Error deleting todo ${request.params.id} ` + err.message,
+      });
     }
   });
   /** end delete a todo by id */
@@ -212,11 +210,9 @@ async function TodoRoutes(fastify) {
         reply.send({ message: "todo updated!!!" });
       }
     } catch (err) {
-      reply
-        .status(500)
-        .send({
-          message: `Error updating todo ${request.params.id} ` + err.message,
-        });
+      reply.status(500).send({
+        message: `Error updating todo ${request.params.id} ` + err.message,
+      });
     }
   });
   /** end update todo by id */
