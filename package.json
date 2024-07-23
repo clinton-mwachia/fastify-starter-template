@@ -4,7 +4,6 @@
   "description": "FASTIFY START TEMPLATE FOR YOUR API",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --exit",
     "dev": "nodemon --env-file=.env index.js"
   },
   "keywords": [
@@ -26,9 +25,6 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
-    "chai": "^5.1.1",
-    "chai-http": "^5.0.0",
-    "mocha": "^10.6.0",
     "nodemon": "^3.0.1",
     "pino-pretty": "^10.2.3"
   }

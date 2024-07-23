@@ -5,6 +5,9 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const config = require("../configs/config");
+
+const secret = config.jwt_secret;
 
 async function UserRoutes(fastify) {
   /** start register users */
@@ -75,11 +78,9 @@ async function UserRoutes(fastify) {
         reply.send({ message: "User deleted" });
       }
     } catch (err) {
-      reply
-        .status(500)
-        .send({
-          message: `Error deleting user ${request.params.id} ` + err.message,
-        });
+      reply.status(500).send({
+        message: `Error deleting user ${request.params.id} ` + err.message,
+      });
     }
   });
   /** end delete a user by id */
@@ -103,11 +104,9 @@ async function UserRoutes(fastify) {
         reply.send({ message: "User updated!!!" });
       }
     } catch (err) {
-      reply
-        .status(500)
-        .send({
-          message: `Error updating user ${request.params.id} ` + err.message,
-        });
+      reply.status(500).send({
+        message: `Error updating user ${request.params.id} ` + err.message,
+      });
     }
   });
   /** end update user by id */
@@ -116,7 +115,6 @@ async function UserRoutes(fastify) {
   fastify.post("/user/login", async (request, reply) => {
     try {
       const user = await User.findOne({ username: request.body.username });
-      const secret = process.env.SECRET;
 
       if (!user) {
         return reply.status(404).send({ message: "user not found" });
