@@ -11,6 +11,7 @@ const LoggerMiddleware = require("./helpers/logger");
 const fastifyMultipart = require("@fastify/multipart");
 //const authenticateMiddleware = require("./helpers/auth");
 const path = require("node:path");
+const config = require("./configs/config");
 
 /** start import routes */
 const UserRoutes = require("./routes/user");
@@ -38,8 +39,8 @@ fastify.register(TodoRoutes);
 /** end routes */
 
 /** start constants */
-const DB = process.env.DB;
-const PORT = process.env.PORT;
+const DB = config.mongo_url;
+const PORT = config.port;
 /** end constants */
 
 /**
@@ -54,11 +55,6 @@ mongoose
     fastify.log.info("DB SUCCESSFULLY CONNECTED!!!");
   })
   .catch((err) => fastify.log.error(err.message));
-
-/**
- * Export Fastify instance for testing
- */
-module.exports = fastify;
 
 /**
  * Run the server!
