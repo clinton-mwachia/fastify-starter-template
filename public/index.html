@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>TODO</title>
+  </head>
+  <body>
+    <h1>Todo List</h1>
+    <form id="todo-form">
+      <input
+        type="text"
+        id="todo-input"
+        placeholder="Add a new todo"
+        required
+      />
+      <select id="user-select" required>
+        <option value="">Select a user</option>
+      </select>
+      <select id="priority-select" required>
+        <option value="">Select priority</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="urgent">Urgent</option>
+      </select>
+      <input type="file" id="file-input" name="file" multiple required />
+      <button type="submit">Add Todo</button>
+    </form>
+    <ul id="todo-list"></ul>
+    <script src="./app.js"></script>
+  </body>
+</html>
