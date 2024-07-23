@@ -23,7 +23,7 @@ const TodoRoutes = require("./routes/todo");
 fastify.addHook("preHandler", LoggerMiddleware);
 /** end middlewares */
 
-/** start routes */
+/** start register middlewares */
 fastify.register(fastifyMultipart, {
   attachFieldsToBody: "keyValues",
 });
@@ -31,8 +31,19 @@ fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "uploads"),
   prefix: "/uploads/",
 });
+fastify.register(require("@fastify/static"), {
+  root: path.join(__dirname, "public"),
+  decorateReply: false,
+});
 fastify.register(require("@fastify/cors"), {
   origin: "*",
+});
+/** end templates */
+
+/** start routes */
+// Serving index.html from the templates directory
+fastify.get("/hello", async (request, reply) => {
+  reply.sendFile("index.html");
 });
 fastify.register(UserRoutes);
 fastify.register(TodoRoutes);
