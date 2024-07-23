@@ -1,7 +1,7 @@
 {
   "name": "fastify-starter-template",
-  "version": "1.4.0",
-  "description": "FASTIFY START TEMPLATE FOR YOUR API",
+  "version": "1.4.1",
+  "description": "FASTIFY STARTER TEMPLATE FOR YOUR API",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --env-file=.env index.js"
