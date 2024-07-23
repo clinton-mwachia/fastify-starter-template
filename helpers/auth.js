@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
-const SECRET = process.env.SECRET;
+const config = require("../configs/config");
+
+const SECRET = config.jwt_secret;
 
 const authenticateMiddleware = async (request, reply) => {
   const { url } = request.raw;
