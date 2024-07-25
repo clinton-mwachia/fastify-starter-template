@@ -14,6 +14,7 @@
 - Authentication.
 - File Uploads
 - Easy integration and extensibility to fit your project requirements.
+- Simple html UI to test the apis.
 
 ## 🛠️ Built with:
 

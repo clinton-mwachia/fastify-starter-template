@@ -38,13 +38,13 @@ fastify.register(require("@fastify/static"), {
 fastify.register(require("@fastify/cors"), {
   origin: "*",
 });
-/** end templates */
+/** end register middlewares */
 
-/** start routes */
-// Serving index.html from the templates directory
-fastify.get("/hello", async (request, reply) => {
-  reply.sendFile("index.html");
+// Serving index.html from the public directory
+fastify.get("/t", async (req, reply) => {
+  return reply.sendFile("index.html");
 });
+/** start routes */
 fastify.register(UserRoutes);
 fastify.register(TodoRoutes);
 /** end routes */
