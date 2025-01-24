@@ -58,10 +58,7 @@ const PORT = config.port;
  * connect to the db
  */
 mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(DB)
   .then(() => {
     fastify.log.info("DB SUCCESSFULLY CONNECTED!!!");
   })
