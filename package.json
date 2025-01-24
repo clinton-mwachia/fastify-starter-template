@@ -21,7 +21,7 @@
     "fastify": "^4.24.2",
     "fastify-multer": "^2.0.3",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.6.2",
+    "mongoose": "^8.9.5",
     "winston": "^3.11.0"
   },
   "devDependencies": {
