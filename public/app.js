@@ -4,6 +4,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadUsersToDisplay();
 });
 
+// a modal to open and close the forms
+function openModal(id) {
+  document.getElementById(id).style.display = "flex";
+}
+
+function closeModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+// Close modal when clicking outside content
+window.onclick = function (event) {
+  const modals = document.querySelectorAll(".modal");
+  modals.forEach((modal) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+};
+
 /** TODOS FUNCTIONS */
 // a function to load all users
 async function loadTodos() {
@@ -12,6 +31,15 @@ async function loadTodos() {
   const todoList = document.getElementById("todo-list");
 
   todoList.innerHTML = "";
+
+  if (todos.length === 0) {
+    const empty = document.createElement("li");
+    empty.classList.add("empty-label");
+    empty.textContent = "No todos available";
+    todoList.appendChild(empty);
+    return;
+  }
+
   todos.forEach((todo) => {
     const li = document.createElement("li");
     li.setAttribute("data-id", todo._id);
@@ -26,6 +54,7 @@ async function loadTodos() {
 
 document.getElementById("todo-form").addEventListener("submit", async (e) => {
   e.preventDefault();
+
   const input = document.getElementById("todo-input");
   const userSelect = document.getElementById("user-select");
   const prioritySelect = document.getElementById("priority-select");
@@ -36,29 +65,34 @@ document.getElementById("todo-form").addEventListener("submit", async (e) => {
   const priority = prioritySelect.value;
   const file = fileInput.files;
 
-  if (title && user && priority) {
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("user", user);
-    formData.append("priority", priority);
-    formData.append("files", file);
+  if (!title || !user || !priority) return;
 
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("user", user);
+  formData.append("priority", priority);
+  formData.append("files", file);
+
+  try {
     const response = await fetch("http://127.0.0.1:4050/todo/register", {
       method: "POST",
       body: formData,
     });
 
-    if (response.ok) {
-      input.value = "";
-      userSelect.value = "";
-      prioritySelect.value = "";
-      fileInput.value = "";
-      loadTodos();
-    }
-
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    // reset form
+    input.value = "";
+    userSelect.value = "";
+    prioritySelect.value = "";
+    fileInput.value = "";
+
+    loadTodos();
+  } catch (err) {
+    console.error("Error adding todo:", err);
+    alert("Failed to add todo. Please try again.");
   }
 });
 
@@ -116,6 +150,15 @@ async function loadUsersToDisplay() {
   const userList = document.getElementById("user-list");
 
   userList.innerHTML = "";
+
+  if (users.length === 0) {
+    const empty = document.createElement("li");
+    empty.classList.add("empty-label");
+    empty.textContent = "No users available";
+    userList.appendChild(empty);
+    return;
+  }
+
   users.forEach((user) => {
     const li = document.createElement("li");
     li.setAttribute("data-id", user._id);

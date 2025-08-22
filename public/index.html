@@ -20,43 +20,64 @@
     </div>
     <!-- todos tab -->
     <div id="todos" class="tabcontent">
-      <h2>Todos</h2>
-      <form id="todo-form">
-        <input
-          type="text"
-          id="todo-input"
-          placeholder="Add a new todo"
-          required
-        />
-        <select id="user-select" required>
-          <option value="">Select a user</option>
-        </select>
-        <select id="priority-select" required>
-          <option value="">Select priority</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-        <input type="file" id="file-input" name="file" required />
-        <button type="submit">Add Todo</button>
-      </form>
+      <!-- Button to open Todos modal -->
+      <button onclick="openModal('todoModal')">➕ Add Todo</button>
+
+      <div id="todoModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('todoModal')">&times;</span>
+          <h2>Add Todo</h2>
+          <form id="todo-form">
+            <input
+              type="text"
+              id="todo-input"
+              placeholder="Add a new todo"
+              required
+            />
+            <select id="user-select" required>
+              <option value="">Select a user</option>
+            </select>
+            <select id="priority-select" required>
+              <option value="">Select priority</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+            <input type="file" id="file-input" name="file" required />
+            <button type="submit">Save Todo</button>
+          </form>
+        </div>
+      </div>
       <ul id="todo-list"></ul>
     </div>
     <!-- users tab -->
     <div id="users" class="tabcontent">
-      <h2>Users</h2>
-      <form id="user-form">
-        <input type="text" id="username" placeholder="Username" required />
-        <select id="role" required>
-          <option value="">Select role</option>
-          <option value="superadmin">Superadmin</option>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
-        </select>
-        <input type="text" id="phone" placeholder="Phone" required />
-        <input type="password" id="password" placeholder="Password" required />
-        <button type="submit">Add User</button>
-      </form>
+      <!-- Button to open Users modal -->
+      <button onclick="openModal('userModal')">➕ Add User</button>
+
+      <div id="userModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('userModal')">&times;</span>
+          <h2>Add User</h2>
+          <form id="user-form">
+            <input type="text" id="username" placeholder="Username" required />
+            <select id="role" required>
+              <option value="">Select role</option>
+              <option value="superadmin">Superadmin</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+            </select>
+            <input type="text" id="phone" placeholder="Phone" required />
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+            />
+            <button type="submit">Save User</button>
+          </form>
+        </div>
+      </div>
       <ul id="user-list"></ul>
     </div>
     <ul id="todo-list"></ul>
