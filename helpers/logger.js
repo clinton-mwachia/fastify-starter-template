@@ -5,7 +5,7 @@ const logFormat = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
   winston.format.printf(({ timestamp, level, message }) => {
     return `${timestamp} [${level.toUpperCase()}]  ${message}`;
-  })
+  }),
 );
 
 // Create a logger with console and file transports
@@ -24,7 +24,7 @@ const LoggerMiddleware = (request, reply, done) => {
   logger.info(
     `Received Request: ipAddress: ${ip} Method: ${method} URL: ${url} Req_id: ${id} Status: ${
       reply.statusCode
-    } responseTime: ${reply.getResponseTime()}ms`
+    } responseTime: ${reply.elapsedTime}ms`,
   );
   done();
 };

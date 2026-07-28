@@ -24,9 +24,7 @@ fastify.addHook("preHandler", LoggerMiddleware);
 /** end middlewares */
 
 /** start register middlewares */
-fastify.register(fastifyMultipart, {
-  attachFieldsToBody: "keyValues",
-});
+fastify.register(fastifyMultipart);
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "uploads"),
   prefix: "/uploads/",

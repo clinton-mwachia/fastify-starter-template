@@ -2,7 +2,7 @@
  * user routes
  */
 const User = require("../models/user");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const config = require("../configs/config");
@@ -96,7 +96,7 @@ async function UserRoutes(fastify) {
         request.body,
         {
           new: true,
-        }
+        },
       );
       if (!user) {
         reply.send({ message: "User not found!" });
@@ -157,7 +157,7 @@ async function UserRoutes(fastify) {
           { password: bcrypt.hashSync(request.body.password, 10) },
           {
             new: true,
-          }
+          },
         );
         if (!user) {
           return reply
@@ -188,7 +188,7 @@ async function UserRoutes(fastify) {
         { password: bcrypt.hashSync(request.body.password, 10) },
         {
           new: true,
-        }
+        },
       );
       if (!user) {
         return reply.status(400).send({ message: "User not found" });

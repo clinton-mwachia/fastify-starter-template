@@ -1,63 +1,64 @@
-/**
- * todos routers
- */
 const Todo = require("../models/todo");
 const mongoose = require("mongoose");
 const User = require("../models/user");
-const multer = require("fastify-multer");
 const path = require("node:path");
 const fs = require("node:fs");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../uploads"));
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
 async function TodoRoutes(fastify) {
-  fastify.register(upload.contentParser);
   /** start insert a single todo */
-  fastify.post(
-    "/todo/register",
-    { preHandler: upload.array("files", 12) },
-    async (request, reply) => {
-      const { user, title, due } = request.body;
+  fastify.post("/todo/register", async (request, reply) => {
+    try {
+      // 1. Initialize collections for text fields and file details
+      const body = {};
+      const imgUrls = [];
 
-      if (!user || !title) {
-        reply.send({ message: "The fields are required" });
-      }
-      try {
-        const user = await User.findById(request.body.user);
+      // 2. Safely parse incoming multipart forms (files + text fields) sequentially
+      const parts = request.parts();
+      for await (const part of parts) {
+        if (part.file) {
+          // It's a file! Stream it directly to your disk folder
+          const savePath = path.join(__dirname, "../uploads", part.filename);
+          await part.toBuffer(); // Alternately, stream write or save to disk:
 
-        if (!user) {
-          reply.status(404).send({ message: "User not found" });
+          // To stream directly to disk without loading entirely into memory:
+          const writeStream = fs.createWriteStream(savePath);
+          await new Promise((resolve, reject) => {
+            part.file.pipe(writeStream);
+            part.file.on("end", resolve);
+            part.file.on("error", reject);
+          });
+
+          imgUrls.push(part.filename);
         } else {
-          let imgUrls = [];
-          if (request.files) {
-            for (const file of request.files) {
-              const { originalname } = file;
-              imgUrls.push(originalname);
-            }
-          }
-
-          const todo = new Todo(request.body);
-          todo.files = imgUrls;
-          await todo.save();
-
-          reply.send({ message: "Todo Added!" });
+          // It's a regular text field! (e.g., user, title, due)
+          body[part.fieldname] = part.value;
         }
-      } catch (err) {
-        reply
-          .status(500)
-          .send({ message: "Error inserting todo " + err.message });
       }
+
+      const { user: userId, title } = body;
+
+      // 3. Match old validation logic
+      if (!userId || !title) {
+        return reply.status(400).send({ message: "The fields are required" });
+      }
+
+      const userExists = await User.findById(userId);
+      if (!userExists) {
+        return reply.status(404).send({ message: "User not found" });
+      }
+
+      // 4. Save to the database
+      const todo = new Todo(body);
+      todo.files = imgUrls;
+      await todo.save();
+
+      return reply.send({ message: "Todo Added!" });
+    } catch (err) {
+      return reply
+        .status(500)
+        .send({ message: "Error inserting todo " + err.message });
     }
-  );
+  });
   /** end insert a single todo */
 
   /** start get all todos */
@@ -93,7 +94,7 @@ async function TodoRoutes(fastify) {
       reply.send({
         totalPages: totalPages,
         data: todos,
-        hasMore: page < totalPages,
+        hasMore: pageNumber < totalPages,
       });
     } catch (error) {
       reply
@@ -106,9 +107,8 @@ async function TodoRoutes(fastify) {
 
   /** start get todo by id */
   fastify.get("/todo/:id", async (request, reply) => {
-    // validate todo id
     if (!mongoose.isValidObjectId(request.params.id)) {
-      reply.status(400).send({ message: "Invalid todo id" });
+      return reply.status(400).send({ message: "Invalid todo id" });
     }
     try {
       const todo = await Todo.findById(request.params.id)
@@ -160,22 +160,19 @@ async function TodoRoutes(fastify) {
   /** start delete a todo by id */
   fastify.delete("/todo/:id", async (request, reply) => {
     try {
-      // Find todo by ID
       const todo = await Todo.findById(request.params.id);
 
       if (!todo) {
         return reply.status(404).send({ message: "Todo not found" });
       }
 
-      if (todo.files !== null) {
-        // Delete the associated files in the "uploads" folder
+      if (todo.files && todo.files.length > 0) {
         const filePathsToDelete = todo.files
           .filter((filename) => filename !== null && filename !== undefined)
           .map((filename) => path.join(__dirname, "../uploads", filename))
-          .filter((filePath) => fs.existsSync(filePath)); // skip files that do not exist
+          .filter((filePath) => fs.existsSync(filePath));
 
         filePathsToDelete.forEach((filePath) => {
-          // Use fs.unlink to delete the file
           fs.unlinkSync(filePath);
         });
       }
@@ -200,9 +197,7 @@ async function TodoRoutes(fastify) {
       const todo = await Todo.findByIdAndUpdate(
         request.params.id,
         request.body,
-        {
-          new: true,
-        }
+        { new: true },
       );
       if (!todo) {
         reply.send({ message: "todo not found!" });
@@ -221,11 +216,7 @@ async function TodoRoutes(fastify) {
   fastify.get("/todos/count", async (request, reply) => {
     try {
       const todocount = await Todo.countDocuments();
-      if (!todocount) {
-        return reply.send({ TotalTodos: 0 });
-      } else {
-        return reply.send({ TotalTodos: todocount });
-      }
+      return reply.send({ TotalTodos: todocount || 0 });
     } catch (error) {
       return reply.status(500).send({ message: error.message });
     }
@@ -233,26 +224,17 @@ async function TodoRoutes(fastify) {
   /** end count all todos */
 
   /** start count todos by priority */
-  // http://localhost:4050/todos/count/priority?priority=low
   fastify.get("/todos/count/priority", async (request, reply) => {
     try {
-      const todocount = await Todo.find({
+      const todocount = await Todo.countDocuments({
         priority: request.query.priority,
-      }).countDocuments();
-      if (!todocount) {
-        return reply.send({ TotalTodos: 0 });
-      } else {
-        return reply.send({ TotalTodos: todocount });
-      }
+      });
+      return reply.send({ TotalTodos: todocount || 0 });
     } catch (error) {
       return reply.status(500).send({ message: error.message });
     }
   });
   /** end count todos by priority*/
-
-  /** start aggregate todos */
-  // TODOD
-  /** end aggregate todos */
 }
 
 module.exports = TodoRoutes;
