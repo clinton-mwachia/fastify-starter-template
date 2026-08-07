@@ -3,63 +3,108 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const path = require("node:path");
 const fs = require("node:fs");
+const { pipeline } = require("stream/promises");
 
 async function TodoRoutes(fastify) {
-  /** start insert a single todo */
   fastify.post("/todo/register", async (request, reply) => {
     try {
-      // 1. Initialize collections for text fields and file details
+      // Create uploads directory if it doesn't exist
+      const uploadDir = path.join(process.cwd(), "uploads");
+
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      console.log("Upload Directory:", uploadDir);
+      console.log("Request Body:", request.body);
+
       const body = {};
-      const imgUrls = [];
+      const uploadedFiles = [];
 
-      // 2. Safely parse incoming multipart forms (files + text fields) sequentially
-      const parts = request.parts();
-      for await (const part of parts) {
-        if (part.file) {
-          // It's a file! Stream it directly to your disk folder
-          const savePath = path.join(__dirname, "../uploads", part.filename);
-          await part.toBuffer(); // Alternately, stream write or save to disk:
+      for (const [key, field] of Object.entries(request.body || {})) {
+        // Handle arrays of files
+        if (Array.isArray(field)) {
+          for (const item of field) {
+            if (!item || !item.file) continue;
 
-          // To stream directly to disk without loading entirely into memory:
-          const writeStream = fs.createWriteStream(savePath);
-          await new Promise((resolve, reject) => {
-            part.file.pipe(writeStream);
-            part.file.on("end", resolve);
-            part.file.on("error", reject);
-          });
+            const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${path.basename(item.filename)}`;
 
-          imgUrls.push(part.filename);
-        } else {
-          // It's a regular text field! (e.g., user, title, due)
-          body[part.fieldname] = part.value;
+            const filepath = path.join(uploadDir, filename);
+
+            await pipeline(item.file, fs.createWriteStream(filepath));
+
+            uploadedFiles.push(filename);
+          }
+        }
+
+        // Handle single file
+        else if (field && field.file) {
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${path.basename(field.filename)}`;
+
+          const filepath = path.join(uploadDir, filename);
+
+          await pipeline(field.file, fs.createWriteStream(filepath));
+
+          uploadedFiles.push(filename);
+        }
+
+        // Handle normal text fields
+        else if (
+          field &&
+          typeof field === "object" &&
+          Object.prototype.hasOwnProperty.call(field, "value")
+        ) {
+          body[key] = field.value;
+        }
+
+        // Handle primitive values
+        else {
+          body[key] = field;
         }
       }
 
+      // Validation
       const { user: userId, title } = body;
 
-      // 3. Match old validation logic
       if (!userId || !title) {
-        return reply.status(400).send({ message: "The fields are required" });
+        return reply.status(400).send({
+          success: false,
+          message: "User and title are required.",
+        });
       }
 
+      // Check user exists
       const userExists = await User.findById(userId);
+
       if (!userExists) {
-        return reply.status(404).send({ message: "User not found" });
+        return reply.status(404).send({
+          success: false,
+          message: "User not found.",
+        });
       }
 
-      // 4. Save to the database
-      const todo = new Todo(body);
-      todo.files = imgUrls;
+      // Save Todo
+      const todo = new Todo({
+        ...body,
+        files: uploadedFiles,
+      });
+
       await todo.save();
 
-      return reply.send({ message: "Todo Added!" });
-    } catch (err) {
-      return reply
-        .status(500)
-        .send({ message: "Error inserting todo " + err.message });
+      return reply.status(201).send({
+        success: true,
+        message: "Todo added successfully.",
+        todo,
+      });
+    } catch (error) {
+      console.error(error);
+
+      return reply.status(500).send({
+        success: false,
+        message: error.message,
+      });
     }
   });
-  /** end insert a single todo */
 
   /** start get all todos */
   fastify.get("/todos", async (request, reply) => {

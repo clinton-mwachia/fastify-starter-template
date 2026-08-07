@@ -24,7 +24,12 @@ fastify.addHook("preHandler", LoggerMiddleware);
 /** end middlewares */
 
 /** start register middlewares */
-fastify.register(fastifyMultipart);
+fastify.register(fastifyMultipart, {
+  attachFieldsToBody: true, // Automatically separates text fields and file streams
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+});
 fastify.register(require("@fastify/static"), {
   root: path.join(__dirname, "uploads"),
   prefix: "/uploads/",
